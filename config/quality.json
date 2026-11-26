@@ -1,4 +1,5 @@
 {
+  "costPct": 0.2,
   "weights": { "trigger": 0.35, "structure": 0.20, "stop": 0.15, "winrate": 0.15, "sample": 0.10, "patience": 0.05 },
   "hqMaxStopPct": 1.5,
   "minRR": 1.5,

@@ -1,0 +1,13 @@
+{
+  "validasi": { "minTrades": 150, "minWeeks": 8, "minPF": 1.2 },
+  "dailyCap": 3,
+  "alertDays": 30,
+  "minSinyalAlert": 10,
+  "minSelesaiAlert": 20,
+  "pending": { "maxJarakPct": 1.0, "maxUmurJam": 12, "retestTolPct": 0.15, "candles": 8 },
+  "event": { "sebelumJam": 2, "sesudahJam": 1 },
+  "pasar": { "volRendah": 0.9, "atr1hMin": 0.2, "atr1hMax": 1.5, "erRange": 0.25, "erTrend": 0.45, "minKoin": 15 },
+  "jurnalDiamJam": 48,
+  "elizMaxHari": 3,
+  "laporanHari": 3
+}

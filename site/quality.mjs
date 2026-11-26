@@ -1,5 +1,7 @@
 // Mesin penilaian kualitas scalping (murni, tanpa DOM). Dipakai browser (site/app.js) dan Node (tests).
 // Skema sinyal ternormalisasi: lihat README bagian "Skema sinyal".
+// Perubahan dari scalping-main: semua R memakai R BERSIH setelah biaya (cfg.costPct), konsep dari monitortn.
+import { netR } from './analytics.mjs';
 
 export const SETUPS = {
   failed_breakout: { label: 'Failed Breakout', base: 100 },
@@ -27,6 +29,7 @@ export const FLAGS = {
 };
 
 export const DEFAULTS = {
+  costPct: .2,
   weights: { trigger: .35, structure: .20, stop: .15, winrate: .15, sample: .10, patience: .05 },
   minStopPct: .15, hqMaxStopPct: 1.5, softMaxStopPct: 3.5, minRR: 1.5, maxSaneRR: 10, maxTouches: 3,
   hqMinBase: 80, hqMinQ: 75, hqTfs: ['5m', '15m'],
@@ -110,7 +113,7 @@ export function annotate(list, cfg = DEFAULTS) {
 const exitT = s => Date.parse(s.exitTs || s.ts);
 function core(L, cfg) {
   const closed = L.filter(s => s.state === 'closed' && s.r != null).sort((x, y) => exitT(x) - exitT(y));
-  const rs = closed.map(s => s.r);
+  const rs = closed.map(s => netR(s, cfg.costPct));
   const wins = rs.filter(r => r > cfg.noiseR).length, losses = rs.filter(r => r < -cfg.noiseR).length;
   const gp = sum(rs.filter(r => r > 0)), gl = -sum(rs.filter(r => r < 0));
   let eq = 0, peak = 0, dd = 0, run = 0, mcl = 0;
@@ -127,13 +130,13 @@ function core(L, cfg) {
     expR: mean(rs), totalR: sum(rs), pf: gl > 0 ? gp / gl : null, maxDD: dd, mcl,
     avgRR: mean(rrs), avgRR1: mean(rr1s), avgStop: mean(L.filter(s => s.stopPct > 0).map(s => s.stopPct)),
     avgRisk: mean(L.map(s => s.riskPct ?? cfg.assumedRiskPct)),
-    equity: closed.map(s => ({ t: exitT(s), r: +(c += s.r).toFixed(3) })),
+    equity: closed.map((s, i) => ({ t: exitT(s), r: +(c += rs[i]).toFixed(3) })),
   };
 }
 
 const STOP_BINS = [0, .25, .5, .75, 1, 1.5, 2, 3, Infinity];
 const binLabel = i => i === STOP_BINS.length - 2 ? `>${STOP_BINS[i]}%` : `${STOP_BINS[i]}–${STOP_BINS[i + 1]}%`;
-const closedR = L => L.filter(s => s.state === 'closed' && s.r != null).sort((x, y) => exitT(x) - exitT(y)).map(s => s.r);
+const closedR = (L, cfg) => L.filter(s => s.state === 'closed' && s.r != null).sort((x, y) => exitT(x) - exitT(y)).map(s => netR(s, cfg.costPct));
 function groupBy(L, f) { const o = {}; for (const x of L) (o[f(x)] ||= []).push(x); return o; }
 
 // ---------- evaluasi 1 mesin ----------
@@ -156,7 +159,7 @@ export function evaluate(list, cfgIn = {}, opts = {}) {
   const spd = n / days;
   const rapidPct = pct(s => s.a.rapid);
   const wrS = (hqCore.wins + cfg.wrPrior * cfg.wrPriorN) / (hqCore.closedN + cfg.wrPriorN);
-  const pool = hqCore.closedN >= 8 ? closedR(hqL) : closedR(all);
+  const pool = hqCore.closedN >= 8 ? closedR(hqL, cfg) : closedR(all, cfg);
   const size = Math.max(1, Math.ceil(pool.length / 4));
   const buckets = []; for (let i = 0; i < pool.length; i += size) buckets.push(pool.slice(i, i + size));
   const bucketPos = buckets.length >= 2 ? buckets.filter(b => mean(b) >= 0).length / buckets.length : 0;
@@ -210,7 +213,7 @@ function weaknesses(m, cfg) {
   if (m.rapidPct >= 20) out.push(`${f(m.rapidPct)}% sinyal adalah re-entry < ${cfg.cooldownMin} menit di simbol yang sama (indikasi memaksa entry / revenge).`);
   if (m.spd > cfg.spdOk) out.push(`Frekuensi ${f(m.spd, 1)} sinyal/hari melebihi batas disiplin (${cfg.spdOk}/hari).`);
   if (m.full.mcl >= 5) out.push(`Loss beruntun maksimum ${m.full.mcl}x.`);
-  if (m.hqCore.closedN >= 10 && m.hqCore.expR < 0) out.push(`Expectancy setup berkualitas tinggi negatif (${f(m.hqCore.expR, 2)}R, n=${m.hqCore.closedN}): filter kualitas belum menghasilkan edge.`);
+  if (m.hqCore.closedN >= 10 && m.hqCore.expR < 0) out.push(`Expectancy bersih setup berkualitas tinggi negatif (${f(m.hqCore.expR, 2)}R, n=${m.hqCore.closedN}): filter kualitas belum menghasilkan edge.`);
   const nonHq = core(m.sigs.filter(s => !s.a.hq), cfg);
   if (m.hqCore.closedN >= 8 && nonHq.closedN >= 8 && m.hqCore.wr + 10 < nonHq.wr) out.push(`Win rate HQ (${f(m.hqCore.wr)}%) lebih rendah dari non-HQ (${f(nonHq.wr)}%): kriteria kualitas mesin tidak terbukti memisahkan hasil.`);
   const bad = m.bySetup.find(x => x.closedN >= 8 && x.expR <= -.3);

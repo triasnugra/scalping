@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Scalp Quality Monitor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Monitor Scalping (msc)</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 <style>
 :root{--bg:#0a0e16;--panel:#111826;--panel2:#161f31;--line:#222d44;--txt:#e5eaf4;--mut:#8592ab;--good:#2ecc8f;--warn:#f2b441;--bad:#ef5b6b;--acc:#5aa2ff;--vio:#a78bfa;color-scheme:dark}
@@ -59,26 +59,48 @@ details{background:var(--panel);border:1px solid var(--line);border-radius:12px;
 details p,details li{color:#c4cde0;font-size:13px}code{background:#1b2438;padding:1px 6px;border-radius:5px;font-size:12px}
 svg text{fill:var(--mut);font-size:10px}
 .card table th,.card table td{padding:7px 8px}#detail{scroll-margin-top:70px}h2{scroll-margin-top:70px}.disc{color:var(--mut);font-size:11.5px;margin-top:26px;text-align:center}
+textarea{width:100%;height:150px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;box-sizing:border-box;font:12px/1.4 ui-monospace,Menlo,monospace;padding:8px}
+input[type=search],input[type=date]{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit}
+.event{border:1px solid var(--acc);background:rgba(90,162,255,.08);border-radius:10px;padding:9px 14px;margin-bottom:12px;font-size:13px}
+.al{border-left:4px solid var(--line);padding:8px 12px;margin:6px 0;background:var(--panel2);border-radius:0 8px 8px 0}.al.merah{border-color:var(--bad)}.al.kuning{border-color:var(--warn)}.al.info{border-color:var(--mut)}
+.al b.merah{color:var(--bad)}.al b.kuning{color:var(--warn)}.al small{color:var(--mut);display:block;margin-top:2px}
+.pill2{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:700;border:1px solid var(--line)}
+.k-SIAP,.k-BERJALAN{color:var(--good)}.k-BATAL,.k-HINDARI,.k-BASI{color:var(--bad)}.k-TUNGGU,.k-LEWAT{color:var(--warn)}
+.biru{border-color:var(--acc)!important;background:rgba(90,162,255,.1)}.hijau{border-color:#1f6b4d!important;background:rgba(46,204,143,.08)}
+.kol{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.tabs button{margin:2px 4px 2px 0}.tabs button.on{border-color:var(--acc);color:var(--acc)}
+.chk span{display:inline-block;margin-right:14px}
 @media(max-width:560px){.grid{grid-template-columns:1fr}.cmp{grid-template-columns:110px 1fr 60px}}
 </style>
 </head>
 <body>
 <header>
-  <h1>🎯 Scalp Quality Monitor<small>Evaluasi disiplin “No trigger, no trade” · 6 mesin</small></h1>
+  <h1>🎯 Monitor Scalping (msc)<small>Disiplin “No trigger, no trade” + uji swing ala monitortn · R bersih setelah biaya</small></h1>
   <label class="ctl">Periode
     <select id="period"><option value="today">Hari ini</option><option value="7d">7 hari</option><option value="30d" selected>30 hari</option><option value="90d">90 hari</option><option value="all">Semua</option></select></label>
   <label class="ctl">Zona waktu
     <select id="tz"><option value="7" selected>WIB (UTC+7)</option><option value="8">WITA (UTC+8)</option><option value="9">WIT (UTC+9)</option><option value="0">UTC</option></select></label>
   <label class="sw ctl"><input type="checkbox" id="hqOnly"> Hanya sinyal High Quality</label>
+  <button id="notif" title="Notifikasi browser hanya saat halaman terbuka">🔔 Notifikasi browser</button>
   <span class="ctl" id="updated" style="margin-left:auto"></span>
 </header>
 <main>
+  <div id="event" class="event"></div>
   <div id="banner"></div>
   <div class="strip" id="strip"></div>
+  <div id="regime"></div>
   <section class="cards" id="cards"></section>
-  <h2>Perbandingan 6 Mesin <small>klik header untuk mengurutkan · klik baris untuk detail</small></h2>
+  <h2>Notifikasi upgrade <small>rekomendasi perbaikan mesin; notifikasi nyata dikirim lewat GitHub Issue (dan Telegram bila diatur)</small></h2>
+  <div id="alerts"></div>
+  <h2>Perbandingan mesin <small>klik header untuk mengurutkan · klik baris untuk detail</small></h2>
   <div class="wrap"><table id="tbl"></table></div>
+  <h2>Sinyal terbuka <small>harga Binance saat build · keputusan monitor memakai konfirmasi close 15m</small></h2>
+  <div class="wrap"><table id="pend"></table></div>
   <div id="detail"></div>
+  <h2>Jurnal riwayat trading <small>per mesin; ketik koin untuk mencari di semua baris</small></h2>
+  <div id="jtabs" class="tabs"></div>
+  <div style="margin:8px 0"><input id="jq" type="search" placeholder="Cari koin (mis. HBAR)"> <small id="jinfo" class="mut"></small></div>
+  <div class="wrap"><table id="jtbl"></table></div>
   <h2>Heatmap kualitas sinyal <small>jam × hari, mengikuti zona waktu terpilih</small></h2>
   <div class="card">
     <div class="ctl" style="margin-bottom:10px;flex-wrap:wrap">
@@ -89,6 +111,9 @@ svg text{fill:var(--mut);font-size:10px}
     </div>
     <div class="hm" id="hm"></div><div class="legend" id="hmLegend"></div>
   </div>
+  <div id="hypo"></div>
+  <div id="eliz"></div>
+  <div id="lap"></div>
   <details>
     <summary>Metodologi & rumus Quality Score</summary>
     <p><b>Quality Score = 35% Trigger & Invalidation + 20% Struktur/Level + 15% Ketatnya Stop + 15% Win Rate setup berkualitas + 10% Sampel & Konsistensi + 5% Patience.</b> Tiap komponen bernilai 0–100.</p>
@@ -103,6 +128,15 @@ svg text{fill:var(--mut);font-size:10px}
     <p><b>Sinyal High Quality</b> wajib memenuhi SEMUA: setup berbasis trigger (Failed Breakout / Sweep + Reclaim / Breakout + Retest / S-R Scalp) · konfirmasi 5m atau 15m · di tepi range atau level kunci · bukan chasing · stop struktural 0,15–1,5% · level belum jenuh · R:R realistis 1,5–10 · skor sinyal ≥ 75.
     <b>Forced</b> = tanpa trigger jelas, entry tengah range, mengejar harga (momentum/market entry), atau tidak di level penting.
     Semua ambang dapat diubah di <code>config/quality.json</code>. Win rate &amp; profit <i>tidak</i> menentukan HQ — hanya 15% skor yang berasal dari hasil.</p>
+  </details>
+  <details>
+    <summary>Apa yang diambil dari monitortn (swing)</summary>
+    <ul>
+      <li><b>R bersih setelah biaya</b> (biaya pulang-pergi di <code>config/quality.json</code>) dan sensitivitas biaya: pada scalping stop kecil, biaya 0,2% pada stop 0,8% = 0,25R per trade.</li>
+      <li><b>Uji ala Van Tharp</b> (SQN, distribusi R, konsentrasi 3 trade teratas), <b>level unik</b> dan N efektif, serta <b>syarat layak uang sungguhan</b> (jumlah trade, minggu aktif, CI95 bootstrap per minggu, profit factor).</li>
+      <li><b>Kondisi pasar</b> (volume altcoin, volatilitas, mode range/trend), <b>keputusan sinyal terbuka</b> (SIAP/TUNGGU/BATAL/HINDARI) dengan konfirmasi 15m, <b>audit keputusan</b>, uji batas harian dan akhir pekan, kecocokan @eliz883, laporan untuk Claude.</li>
+      <li>Semua ambang adalah hipotesis di <code>config/monitor.json</code>; dibaca bila sampel memadai.</li>
+    </ul>
   </details>
   <p class="disc">Alat evaluasi, bukan nasihat keuangan. Skor bernilai statistik hanya bila jumlah trade selesai memadai (≥ 30–50 per mesin).</p>
 </main>
