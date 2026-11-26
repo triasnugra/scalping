@@ -1,2 +1,12 @@
-{ "name": "scalp-quality-monitor", "version": "1.0.0", "private": true, "type": "module",
-  "scripts": { "test": "node --test", "collect": "node scripts/collect.mjs", "demo": "node scripts/collect.mjs --demo", "serve": "npx serve site" } }
+{
+  "name": "msc-monitor-scalping",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "demo": "node scripts/build.mjs --demo",
+    "serve": "npx serve site"
+  }
+}
