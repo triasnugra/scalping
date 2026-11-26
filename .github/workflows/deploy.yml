@@ -1,0 +1,51 @@
+name: Deploy Scalp Quality Monitor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"      # best-effort; mesin sumber juga scan tiap 10-15 menit
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tes (kualitas, adapter)
+        run: node --test
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Kumpulkan data 6 mesin
+        env:
+          GH_TOKEN: ${{ secrets.ENGINES_TOKEN }}          # opsional: hanya bila repo mesin PRIVAT
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          PREV_PAGES_URL: ${{ steps.pages.outputs.base_url }}
+        run: node scripts/collect.mjs
+      - run: touch site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
