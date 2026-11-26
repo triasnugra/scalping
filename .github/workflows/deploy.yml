@@ -1,8 +1,8 @@
-name: Deploy Scalp Quality Monitor
+name: Monitor Scalping (msc)
 
 on:
   schedule:
-    - cron: "*/15 * * * *"      # best-effort; mesin sumber juga scan tiap 10-15 menit
+    - cron: "*/15 * * * *"      # best-effort; GitHub bisa menunda beberapa menit
   push:
     branches: [main]
   workflow_dispatch:
@@ -11,6 +11,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  issues: write                  # untuk notifikasi upgrade (GitHub Issue)
 
 concurrency:
   group: pages
@@ -19,23 +20,28 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Tes (kualitas, adapter)
+      - name: Tes (kualitas, adapter, analitik, build)
         run: node --test
       - id: pages
         uses: actions/configure-pages@v5
-      - name: Kumpulkan data 6 mesin
+      - name: Bangun data monitor
         env:
-          GH_TOKEN: ${{ secrets.ENGINES_TOKEN }}          # opsional: hanya bila repo mesin PRIVAT
-          GITHUB_OWNER: ${{ github.repository_owner }}
+          GH_TOKEN: ${{ secrets.ENGINES_TOKEN }}        # opsional: hanya bila repo mesin PRIVAT
           PREV_PAGES_URL: ${{ steps.pages.outputs.base_url }}
-        run: node scripts/collect.mjs
-      - run: touch site/.nojekyll
+        run: node scripts/build.mjs
+      - name: Notifikasi upgrade (GitHub Issue, opsional Telegram)
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/notify.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
