@@ -173,12 +173,15 @@ function table() {
 
 // ---------- sinyal terbuka ----------
 const tfmt = (iso, mode = 'dt') => { const d = new Date(Date.parse(iso) + S.tz * 36e5).toISOString(); return mode === 'dt' ? d.slice(5, 16).replace('T', ' ') : d.slice(0, 10); };
+const TZN = { 7: 'WIB', 8: 'WITA', 9: 'WIT', 0: 'UTC' };
+const dfull = iso => (iso && Number.isFinite(Date.parse(iso)) ? new Date(Date.parse(iso) + S.tz * 36e5).toISOString().slice(0, 16).replace('T', ' ') : '–');
+const dur = (a, b) => { const m = Math.round((Date.parse(b) - Date.parse(a)) / 6e4); if (!Number.isFinite(m) || m < 0) return '–'; return m < 60 ? m + ' mnt' : m < 2880 ? (m / 60).toFixed(1) + ' jam' : (m / 1440).toFixed(1) + ' hari'; };
 const kcls = kp => 'k-' + String(kp).split(' ')[0];
 function pend() {
   const P = OV.pending || [];
-  const body = P.length ? P.map(r => `<tr><td class="l"><b>${esc(r.e)}</b></td><td class="l">${esc(r.sym)}</td><td class="l ${r.side === 'long' ? 'good' : 'bad'}">${r.side === 'long' ? 'LONG' : 'SHORT'}</td><td class="n">${esc(r.entry)}</td><td class="n">${esc(r.sl)}</td><td class="n">${esc(r.tp ?? '–')}</td><td class="n">${esc(r.px ?? '–')}</td><td class="n">${r.dist == null ? '–' : f(r.dist, 2, '%')}</td><td class="l num">${tfmt(r.ts)}</td><td class="l"><b class="${kcls(r.kp)}">${esc(r.kp)}</b></td><td class="l" style="white-space:normal;min-width:240px">${esc(r.kn)}</td></tr>`).join('')
-    : '<tr><td colspan="11" class="mut l">Tidak ada sinyal terbuka dari mesin dengan data LIVE.</td></tr>';
-  $('#pend').innerHTML = `<thead><tr><th class="l">Mesin</th><th class="l">Koin</th><th class="l">Arah</th><th>Entry</th><th>SL</th><th>TP</th><th>Harga</th><th>Jarak ke entry</th><th class="l">Tgl</th><th class="l">Keputusan monitor</th><th class="l">Catatan</th></tr></thead><tbody>${body}</tbody>`;
+  const body = P.length ? P.map(r => `<tr><td class="l"><b>${esc(r.e)}</b></td><td class="l">${esc(r.sym)}</td><td class="l ${r.side === 'long' ? 'good' : 'bad'}">${r.side === 'long' ? 'LONG' : 'SHORT'}</td><td class="n">${esc(r.entry)}</td><td class="n">${esc(r.sl)}</td><td class="n">${esc(r.tp ?? '–')}</td><td class="n">${esc(r.px ?? '–')}</td><td class="n">${r.dist == null ? '–' : f(r.dist, 2, '%')}</td><td class="l num">${dfull(r.ts)}</td><td class="n">${dur(r.ts, new Date().toISOString())}</td><td class="l"><b class="${kcls(r.kp)}">${esc(r.kp)}</b></td><td class="l" style="white-space:normal;min-width:240px">${esc(r.kn)}</td></tr>`).join('')
+    : '<tr><td colspan="12" class="mut l">Tidak ada sinyal terbuka dari mesin dengan data LIVE.</td></tr>';
+  $('#pend').innerHTML = `<thead><tr><th class="l">Mesin</th><th class="l">Koin</th><th class="l">Arah</th><th>Entry</th><th>SL</th><th>TP</th><th>Harga</th><th>Jarak ke entry</th><th class="l">Tgl analisis (${TZN[S.tz]})</th><th>Umur</th><th class="l">Keputusan monitor</th><th class="l">Catatan</th></tr></thead><tbody>${body}</tbody>`;
 }
 
 // ---------- grafik ----------
@@ -215,7 +218,7 @@ function detail() {
   const last = (e.last10 || []).map(s => {
     const out = s.state === 'closed' ? `<b class="${netR(s, cost) > .05 ? 'good' : netR(s, cost) < -.05 ? 'bad' : 'mut'}">${sg(netR(s, cost))}R</b>` : s.state === 'open' ? '<span class="warn">OPEN</span>' : '<span class="mut">tidak terisi</span>';
     const fl = s.a.flags.slice(0, 4).map(c => `<span class="fl">${esc(FLAGS[c])}</span>`).join('');
-    return `<tr><td class="l num">${tfmt(s.ts)}</td><td class="l">${esc(s.symbol)} <span class="${s.side === 'long' ? 'good' : 'bad'}">${s.side === 'long' ? 'L' : 'S'}</span></td><td class="l">${esc(SETUPS[s.setup]?.label ?? s.setup)}</td><td class="n">${f(s.stopPct, 2, '%')}</td><td class="n">${f(s.rr, 1)}</td><td class="n">${out}</td><td class="l">${s.a.hq ? '<span class="ok">✓ HQ</span>' : '<span class="no">✗</span>'} <span class="mut">${f(s.a.q)}</span></td><td class="l" style="white-space:normal;min-width:220px">${s.a.hq ? '<span class="mut">memenuhi semua kriteria</span>' : fl}</td></tr>`;
+    return `<tr><td class="l num">${dfull(s.ts)}</td><td class="l num">${s.state === 'closed' ? dfull(s.exitTs) : '–'}</td><td class="l">${esc(s.symbol)} <span class="${s.side === 'long' ? 'good' : 'bad'}">${s.side === 'long' ? 'L' : 'S'}</span></td><td class="l">${esc(SETUPS[s.setup]?.label ?? s.setup)}</td><td class="n">${f(s.stopPct, 2, '%')}</td><td class="n">${f(s.rr, 1)}</td><td class="n">${out}</td><td class="l">${s.a.hq ? '<span class="ok">✓ HQ</span>' : '<span class="no">✗</span>'} <span class="mut">${f(s.a.q)}</span></td><td class="l" style="white-space:normal;min-width:220px">${s.a.hq ? '<span class="mut">memenuhi semua kriteria</span>' : fl}</td></tr>`;
   }).join('');
   const rec = { AKTIFKAN: 'Layak diaktifkan', OPTIMIZE: 'Perlu di-optimize', PAUSE: 'Sebaiknya di-pause', 'NO DATA': 'Belum ada data' }[e.verdict.action];
   const th = e.an.th, lv = e.anAll.lv, rd = e.anAll.ready, mine = AL.alerts.filter(a => a.engine === e.meta.id && a.level !== 'info');
@@ -241,11 +244,17 @@ function detail() {
     <div class="card"><h3>Performa per sesi (UTC: Asia 22–08 · London 08–13 · NY 13–22)</h3><div class="wrap" style="border:0"><table><thead><tr><th class="l">Sesi</th><th>Sinyal</th><th>% HQ</th><th>Selesai</th><th>WR</th><th>R bersih</th><th>R bersih HQ</th></tr></thead><tbody>${sess}</tbody></table></div></div>
     <div class="card"><h3>Equity curve bersih biaya — sinyal HQ (kumulatif R)</h3>${lineChart([{ pts: e.full.equity, color: '#56627f', dash: 1 }, { pts: e.hqCore.equity, color: '#2ecc8f' }])}<div class="legend"><i style="background:#2ecc8f"></i>HQ saja<i style="background:#56627f"></i>semua sinyal (pembanding)</div></div>
     <div class="card"><h3>Distribusi jarak stop loss (% dari entry)</h3>${histo(e.stopDist || [])}</div>
-    <div class="card full"><h3>10 sinyal terakhir & penilaian kualitas</h3><div class="wrap" style="border:0"><table><thead><tr><th class="l">Waktu</th><th class="l">Simbol</th><th class="l">Setup</th><th>Stop</th><th>R:R</th><th>Hasil</th><th class="l">Standar</th><th class="l">Alasan</th></tr></thead><tbody>${last || '<tr><td colspan="8" class="mut">Tidak ada sinyal.</td></tr>'}</tbody></table></div></div>
+    <div class="card full"><h3>10 sinyal terakhir & penilaian kualitas</h3><div class="wrap" style="border:0"><table><thead><tr><th class="l">Tgl analisis</th><th class="l">Tgl hasil</th><th class="l">Simbol</th><th class="l">Setup</th><th>Stop</th><th>R:R</th><th>Hasil</th><th class="l">Standar</th><th class="l">Alasan</th></tr></thead><tbody>${last || '<tr><td colspan="9" class="mut">Tidak ada sinyal.</td></tr>'}</tbody></table></div></div>
   </div>`;
 }
 
 // ---------- jurnal riwayat ----------
+// Tgl hasil = waktu keluar menurut jurnal mesin. Order tidak terisi/kedaluwarsa diberi label; belum selesai = menunggu/berjalan.
+function hasilTgl(s) {
+  if (s.state === 'closed') return s.exitTs ? dfull(s.exitTs) : '<span class="mut">tidak dicatat mesin</span>';
+  if (s.state === 'void') return s.exitTs ? dfull(s.exitTs) + ' <span class="mut">(tidak terisi/kedaluwarsa)</span>' : '<span class="mut">tidak terisi</span>';
+  return `<span class="warn">${s.phase === 'running' ? 'berjalan' : 'belum selesai'}</span>`;
+}
 function journal() {
   $('#jtabs').innerHTML = DATA.engines.map(m => `<button class="${S.jeng === m.id ? 'on' : ''}" data-e="${m.id}">${esc(m.id)}</button>`).join('');
   const q = $('#jq').value.trim().toUpperCase(), P = new Map((OV.pending || []).map(r => [r.e + '|' + r.id, r]));
@@ -257,9 +266,9 @@ function journal() {
     const mon = p ? `<b class="${kcls(p.kp)}">${esc(p.kp)}</b>` : a ? (a.hq ? '<span class="ok">✓ HQ</span>' : '<span class="no">✗</span>') + ` <span class="mut">${f(a.q)}</span>` : '–';
     const cat = p ? p.kn : a ? (a.hq ? 'memenuhi semua kriteria' : a.flags.slice(0, 3).map(c => FLAGS[c]).join('; ')) : '';
     const r = s.state === 'closed' ? netR(s, cost) : null;
-    return `<tr><td class="l"><b>${esc(s.engine)}</b></td><td class="l">${esc(s.symbol)}</td><td class="l ${s.side === 'long' ? 'good' : 'bad'}">${s.side === 'long' ? 'LONG' : 'SHORT'}</td><td class="n">${esc(s.entry)}</td><td class="n">${esc(s.stop)}</td><td class="n">${esc(s.tp ?? '–')}</td><td class="n">${p?.px ?? '–'}</td><td class="n">${p?.dist == null ? '–' : f(p.dist, 2, '%')}</td><td class="l num">${tfmt(s.ts)}</td><td class="l">${mon}</td><td class="l" style="white-space:normal;min-width:240px">${esc(cat)}${s.note ? ' <span class="mut">· ' + esc(String(s.note).slice(0, 90)) + '</span>' : ''}</td><td class="l ${esc(s.outcome === 'TP' ? 'good' : s.outcome === 'SL' ? 'bad' : 'mut')}">${esc(s.outcome)}</td><td class="n ${r > 0 ? 'good' : r < 0 ? 'bad' : ''}">${r == null ? '–' : sg(r)}</td></tr>`;
+    return `<tr><td class="l"><b>${esc(s.engine)}</b></td><td class="l">${esc(s.symbol)}</td><td class="l ${s.side === 'long' ? 'good' : 'bad'}">${s.side === 'long' ? 'LONG' : 'SHORT'}</td><td class="n">${esc(s.entry)}</td><td class="n">${esc(s.stop)}</td><td class="n">${esc(s.tp ?? '–')}</td><td class="n">${p?.px ?? '–'}</td><td class="n">${p?.dist == null ? '–' : f(p.dist, 2, '%')}</td><td class="l num">${dfull(s.ts)}</td><td class="l num">${hasilTgl(s)}</td><td class="n">${s.state === 'closed' || (s.state === 'void' && s.exitTs) ? dur(s.ts, s.exitTs) : s.state === 'open' ? dur(s.ts, new Date().toISOString()) + ' <span class="mut">(berjalan)</span>' : '–'}</td><td class="l">${mon}</td><td class="l" style="white-space:normal;min-width:240px">${esc(cat)}${s.note ? ' <span class="mut">· ' + esc(String(s.note).slice(0, 90)) + '</span>' : ''}</td><td class="l ${esc(s.outcome === 'TP' ? 'good' : s.outcome === 'SL' ? 'bad' : 'mut')}">${esc(s.outcome)}</td><td class="n ${r > 0 ? 'good' : r < 0 ? 'bad' : ''}">${r == null ? '–' : sg(r)}</td></tr>`;
   }).join('');
-  $('#jtbl').innerHTML = `<thead><tr><th class="l">Mesin</th><th class="l">Koin</th><th class="l">Arah</th><th>Entry</th><th>SL</th><th>TP</th><th>Harga</th><th>Jarak ke entry</th><th class="l">Tgl</th><th class="l">Keputusan monitor</th><th class="l">Catatan</th><th class="l">Hasil</th><th>R bersih</th></tr></thead><tbody>${body || '<tr><td colspan="13" class="mut l">Tidak ada baris.</td></tr>'}</tbody>`;
+  $('#jtbl').innerHTML = `<thead><tr><th class="l">Mesin</th><th class="l">Koin</th><th class="l">Arah</th><th>Entry</th><th>SL</th><th>TP</th><th>Harga</th><th>Jarak ke entry</th><th class="l">Tgl analisis (${TZN[S.tz]})</th><th class="l">Tgl hasil (${TZN[S.tz]})</th><th>Durasi</th><th class="l">Keputusan monitor</th><th class="l">Catatan</th><th class="l">Hasil</th><th>R bersih</th></tr></thead><tbody>${body || '<tr><td colspan="15" class="mut l">Tidak ada baris.</td></tr>'}</tbody>`;
 }
 
 // ---------- heatmap ----------
