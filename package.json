@@ -1,0 +1,2 @@
+{ "name": "scalp-quality-monitor", "version": "1.0.0", "private": true, "type": "module",
+  "scripts": { "test": "node --test", "collect": "node scripts/collect.mjs", "demo": "node scripts/collect.mjs --demo", "serve": "npx serve site" } }

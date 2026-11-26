@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scalp Quality Monitor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+<style>
+:root{--bg:#0a0e16;--panel:#111826;--panel2:#161f31;--line:#222d44;--txt:#e5eaf4;--mut:#8592ab;--good:#2ecc8f;--warn:#f2b441;--bad:#ef5b6b;--acc:#5aa2ff;--vio:#a78bfa;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.num,td.n,.big{font-variant-numeric:tabular-nums}
+header{position:sticky;top:0;z-index:10;background:rgba(10,14,22,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+header h1{font-size:16px;margin:0;letter-spacing:.2px}header h1 small{display:block;font-weight:400;color:var(--mut);font-size:11px}
+.ctl{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:12px}
+select,button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit}
+button{cursor:pointer}button:hover,select:hover{border-color:var(--acc)}
+.sw{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.sw input{appearance:none;width:34px;height:19px;border-radius:19px;background:#2a3550;position:relative;cursor:pointer;transition:.15s}
+.sw input::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.15s}
+.sw input:checked{background:var(--good)}.sw input:checked::after{left:17px}
+main{max-width:1500px;margin:0 auto;padding:18px 20px 60px}
+.banner{border:1px solid var(--vio);background:rgba(167,139,250,.08);color:#d8ccff;border-radius:10px;padding:9px 14px;margin-bottom:14px;font-size:13px}
+.strip{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mut);background:var(--panel)}
+.chip b{color:var(--txt);font-weight:600}
+.st-live{border-color:#1f6b4d}.st-live i{color:var(--good)}.st-stale i{color:var(--warn)}.st-demo i{color:var(--vio)}.st-error i{color:var(--bad)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h3{margin:0 0 6px;font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.big{font-size:28px;font-weight:700;line-height:1.1}.sub{color:var(--mut);font-size:12px;margin-top:4px}
+.tri{display:flex;gap:14px}.tri div{text-align:center}.tri b{display:block;font-size:22px}.tri span{font-size:11px;color:var(--mut)}
+.rk{list-style:none;margin:4px 0 0;padding:0}.rk li{display:flex;justify-content:space-between;gap:8px;padding:2px 0;font-size:13px}
+.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}.mut{color:var(--mut)}
+h2{font-size:15px;margin:22px 0 10px}h2 small{color:var(--mut);font-weight:400;font-size:12px;margin-left:6px}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%}
+th,td{padding:9px 11px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:nth-child(2),td:nth-child(2),th.l,td.l{text-align:left}
+th{font-size:11px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;background:var(--panel2);position:sticky;top:0}
+th.on{color:var(--acc)}tr:last-child td{border-bottom:0}
+tbody tr.row{cursor:pointer}tbody tr.row:hover{background:#151e30}tbody tr.sel{background:#1a2740}
+.pill{display:inline-block;min-width:46px;text-align:center;padding:3px 9px;border-radius:7px;font-weight:700}
+.p-good{background:rgba(46,204,143,.16);color:var(--good)}.p-warn{background:rgba(242,180,65,.16);color:var(--warn)}.p-bad{background:rgba(239,91,107,.16);color:var(--bad)}.p-mut{background:#222b3f;color:var(--mut)}
+.tag{font-size:10.5px;padding:2px 7px;border-radius:5px;font-weight:700;letter-spacing:.3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:12px}
+.grid .card.full{grid-column:1/-1}
+.hd{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.score{font-size:46px;font-weight:800;line-height:1}
+.bar{height:7px;background:#1f2840;border-radius:5px;overflow:hidden}.bar>i{display:block;height:100%;border-radius:5px}
+.cmp{display:grid;grid-template-columns:150px 1fr 80px;gap:4px 10px;align-items:center;font-size:12.5px}
+ul.n{margin:6px 0 0;padding-left:18px}ul.n li{margin:4px 0}
+.fl{display:inline-block;font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin:1px 3px 1px 0}
+.ok{color:var(--good);font-weight:700}.no{color:var(--bad);font-weight:700}
+.hm{display:grid;grid-template-columns:34px repeat(24,minmax(14px,1fr));gap:2px;font-size:10px;color:var(--mut)}
+.hm div{height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.hm .lbl{justify-content:flex-start;height:22px}
+.legend{display:flex;gap:10px;align-items:center;font-size:11px;color:var(--mut);margin-top:8px}.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:18px}summary{cursor:pointer;font-weight:600}
+details p,details li{color:#c4cde0;font-size:13px}code{background:#1b2438;padding:1px 6px;border-radius:5px;font-size:12px}
+svg text{fill:var(--mut);font-size:10px}
+.card table th,.card table td{padding:7px 8px}#detail{scroll-margin-top:70px}h2{scroll-margin-top:70px}.disc{color:var(--mut);font-size:11.5px;margin-top:26px;text-align:center}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.cmp{grid-template-columns:110px 1fr 60px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 Scalp Quality Monitor<small>Evaluasi disiplin “No trigger, no trade” · 6 mesin</small></h1>
+  <label class="ctl">Periode
+    <select id="period"><option value="today">Hari ini</option><option value="7d">7 hari</option><option value="30d" selected>30 hari</option><option value="90d">90 hari</option><option value="all">Semua</option></select></label>
+  <label class="ctl">Zona waktu
+    <select id="tz"><option value="7" selected>WIB (UTC+7)</option><option value="8">WITA (UTC+8)</option><option value="9">WIT (UTC+9)</option><option value="0">UTC</option></select></label>
+  <label class="sw ctl"><input type="checkbox" id="hqOnly"> Hanya sinyal High Quality</label>
+  <span class="ctl" id="updated" style="margin-left:auto"></span>
+</header>
+<main>
+  <div id="banner"></div>
+  <div class="strip" id="strip"></div>
+  <section class="cards" id="cards"></section>
+  <h2>Perbandingan 6 Mesin <small>klik header untuk mengurutkan · klik baris untuk detail</small></h2>
+  <div class="wrap"><table id="tbl"></table></div>
+  <div id="detail"></div>
+  <h2>Heatmap kualitas sinyal <small>jam × hari, mengikuti zona waktu terpilih</small></h2>
+  <div class="card">
+    <div class="ctl" style="margin-bottom:10px;flex-wrap:wrap">
+      <label class="ctl">Mesin <select id="hmEngine"></select></label>
+      <label class="ctl">Metrik <select id="hmMetric">
+        <option value="net">Net kualitas (HQ − non-HQ)</option><option value="ratio">% sinyal HQ</option><option value="count">Jumlah sinyal</option></select></label>
+      <span>(heatmap selalu memakai semua sinyal pada periode, agar HQ vs non-HQ bisa dibandingkan)</span>
+    </div>
+    <div class="hm" id="hm"></div><div class="legend" id="hmLegend"></div>
+  </div>
+  <details>
+    <summary>Metodologi & rumus Quality Score</summary>
+    <p><b>Quality Score = 35% Trigger & Invalidation + 20% Struktur/Level + 15% Ketatnya Stop + 15% Win Rate setup berkualitas + 10% Sampel & Konsistensi + 5% Patience.</b> Tiap komponen bernilai 0–100.</p>
+    <ul>
+      <li><b>Trigger & Invalidation</b> = 65% kejelasan trigger (basis jenis setup × faktor konfirmasi TF: 15m=1,0 · 5m=0,85 · 1H=0,7 · tidak tercatat=0,45 × 0,85 bila market entry) + 35% kualitas invalidation (stop struktural di 0,15–1,5% = 100).</li>
+      <li><b>Struktur</b>: tepi range 100 · level kunci (Monday/PDH/PDL/swing/Fib 0,75) 90 · indikator (EMA/BB) 55 · tanpa level 30 · tengah range 5; −25 bila level sudah diuji ≥3x.</li>
+      <li><b>Stop</b>: ≤0,5% = 100, turun linear sampai 0 di 3,5%; &lt;0,15% = 50 (tergerus noise/biaya).</li>
+      <li><b>Win rate HQ</b>: dikoreksi Bayesian (prior 40%, bobot 6 trade) lalu dipetakan 30% → 0 dan 65% → 100, jadi sampel kecil tidak bisa “menang” dengan keberuntungan.</li>
+      <li><b>Sampel & Konsistensi</b> = 50% jumlah trade selesai (target 50) + 30% porsi kuartal waktu dengan expectancy ≥ 0 + 20% penalti loss beruntun &gt;3.</li>
+      <li><b>Patience</b> = 60% (1 − % forced) + 20% frekuensi (≤3 sinyal/hari penuh, ≥12 nol) + 20% (1 − % re-entry &lt;60 menit di simbol sama).</li>
+    </ul>
+    <p><b>Sinyal High Quality</b> wajib memenuhi SEMUA: setup berbasis trigger (Failed Breakout / Sweep + Reclaim / Breakout + Retest / S-R Scalp) · konfirmasi 5m atau 15m · di tepi range atau level kunci · bukan chasing · stop struktural 0,15–1,5% · level belum jenuh · R:R realistis 1,5–10 · skor sinyal ≥ 75.
+    <b>Forced</b> = tanpa trigger jelas, entry tengah range, mengejar harga (momentum/market entry), atau tidak di level penting.
+    Semua ambang dapat diubah di <code>config/quality.json</code>. Win rate &amp; profit <i>tidak</i> menentukan HQ — hanya 15% skor yang berasal dari hasil.</p>
+  </details>
+  <p class="disc">Alat evaluasi, bukan nasihat keuangan. Skor bernilai statistik hanya bila jumlah trade selesai memadai (≥ 30–50 per mesin).</p>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

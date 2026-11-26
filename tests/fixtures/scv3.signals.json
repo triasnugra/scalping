@@ -1,0 +1,397 @@
+{
+ "updated": "2026-11-26T03:06:18.025531+00:00",
+ "mode": "live",
+ "signals": [
+  {
+   "id": "XRPUSDT-level_sweep-short-202611180115",
+   "symbol": "XRPUSDT",
+   "setup": "level_sweep",
+   "side": "short",
+   "level_name": "Monday High",
+   "ts": "2026-11-18T01:15:00+00:00",
+   "bar_close": "2026-11-18T01:30:00+00:00",
+   "entry": 0.9749,
+   "sl": 0.98250596010162,
+   "tp1": 0.96729403989838,
+   "tp2": 0.9456,
+   "rr1": 1.0,
+   "rr2": 3.85,
+   "tp1_basis": "1R",
+   "tp2_basis": "PDL",
+   "sl_pct": 0.78,
+   "atr": 0.0050298005080995556,
+   "score": 81,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC",
+    "+10 volume sweep 1.8x",
+    "+8 candle trigger kuat",
+    "+8 RR TP2 3.9",
+    "-10 volume sepi"
+   ],
+   "size": {
+    "qty": 1314.76,
+    "notional_usd": 1281.76,
+    "leverage_x": 1.28,
+    "risk_usd": 10.0
+   },
+   "status": "LOSS",
+   "r": -1.2051,
+   "bars": 15,
+   "closed_at": "2026-11-18T05:15:00+00:00",
+   "created_at": "2026-11-18T01:43:32.169929+00:00"
+  },
+  {
+   "id": "LINKUSDT-squeeze_expansion-short-202611191515",
+   "symbol": "LINKUSDT",
+   "setup": "squeeze_expansion",
+   "side": "short",
+   "level_name": "BB Lower",
+   "ts": "2026-11-19T15:15:00+00:00",
+   "bar_close": "2026-11-19T15:30:00+00:00",
+   "entry": 9.097,
+   "sl": 9.216158901951864,
+   "tp1": 8.886,
+   "tp2": 8.574,
+   "rr1": 1.77,
+   "rr2": 4.39,
+   "tp1_basis": "PDL",
+   "tp2_basis": "PWL",
+   "sl_pct": 1.31,
+   "atr": 0.04529450975932289,
+   "score": 86,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC",
+    "+10 volume ekspansi 3.8x",
+    "+8 candle trigger kuat",
+    "+8 RR TP2 4.4"
+   ],
+   "size": {
+    "qty": 83.9216,
+    "notional_usd": 763.43,
+    "leverage_x": 0.76,
+    "risk_usd": 10.0
+   },
+   "status": "TIMEOUT",
+   "r": 1.5982,
+   "bars": 48,
+   "closed_at": "2026-11-20T03:30:00+00:00",
+   "created_at": "2026-11-19T15:40:11.163650+00:00"
+  },
+  {
+   "id": "DOGEUSDT-squeeze_expansion-short-202611191515",
+   "symbol": "DOGEUSDT",
+   "setup": "squeeze_expansion",
+   "side": "short",
+   "level_name": "BB Lower",
+   "ts": "2026-11-19T15:15:00+00:00",
+   "bar_close": "2026-11-19T15:30:00+00:00",
+   "entry": 0.05902,
+   "sl": 0.05956274743650469,
+   "tp1": 0.058,
+   "tp2": 0.05769,
+   "rr1": 1.88,
+   "rr2": 2.45,
+   "tp1_basis": "Monday Low",
+   "tp2_basis": "Range Low",
+   "sl_pct": 0.92,
+   "atr": 0.0002587371825234626,
+   "score": 70,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC",
+    "+10 volume ekspansi 2.5x"
+   ],
+   "size": {
+    "qty": 18424.8,
+    "notional_usd": 1087.43,
+    "leverage_x": 1.09,
+    "risk_usd": 10.0
+   },
+   "status": "BE",
+   "r": 0.7657,
+   "bars": 9,
+   "closed_at": "2026-11-19T17:45:00+00:00",
+   "created_at": "2026-11-19T15:40:11.163650+00:00"
+  },
+  {
+   "id": "HBARUSDT-breakout_retest-short-202611192230",
+   "symbol": "HBARUSDT",
+   "setup": "breakout_retest",
+   "side": "short",
+   "level_name": "Breakdown H1 (retest)",
+   "ts": "2026-11-19T22:30:00+00:00",
+   "bar_close": "2026-11-19T22:45:00+00:00",
+   "entry": 0.05423,
+   "sl": 0.05459237456777208,
+   "tp1": 0.05386762543222792,
+   "tp2": 0.053505250864455844,
+   "rr1": 1.0,
+   "rr2": 2.0,
+   "tp1_basis": "1R",
+   "tp2_basis": "2.0R",
+   "sl_pct": 0.668,
+   "atr": 0.0004118728388603833,
+   "score": 81,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC",
+    "+8 candle trigger kuat",
+    "+8 EMA20/50 searah"
+   ],
+   "size": {
+    "qty": 27595.8,
+    "notional_usd": 1496.52,
+    "leverage_x": 1.5,
+    "risk_usd": 10.0
+   },
+   "status": "BE",
+   "r": 0.2606,
+   "bars": 11,
+   "closed_at": "2026-11-20T01:30:00+00:00",
+   "created_at": "2026-11-19T22:45:48.253931+00:00"
+  },
+  {
+   "id": "PEPEUSDT-squeeze_expansion-short-202611201200",
+   "symbol": "PEPEUSDT",
+   "setup": "squeeze_expansion",
+   "side": "short",
+   "level_name": "BB Lower",
+   "ts": "2026-11-20T12:00:00+00:00",
+   "bar_close": "2026-11-20T12:15:00+00:00",
+   "entry": 3.56e-06,
+   "sl": 3.608063494978446e-06,
+   "tp1": 3.5119365050215536e-06,
+   "tp2": 3.4638730100431073e-06,
+   "rr1": 1.0,
+   "rr2": 2.0,
+   "tp1_basis": "1R",
+   "tp2_basis": "2.0R",
+   "sl_pct": 1.35,
+   "atr": 3.281747489222845e-08,
+   "score": 78,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC",
+    "+10 volume ekspansi 3.5x",
+    "+8 candle trigger kuat"
+   ],
+   "size": {
+    "qty": 208058000.0,
+    "notional_usd": 740.69,
+    "leverage_x": 0.74,
+    "risk_usd": 10.0
+   },
+   "status": "BE",
+   "r": 0.3815,
+   "bars": 7,
+   "closed_at": "2026-11-20T14:00:00+00:00",
+   "created_at": "2026-11-20T12:19:56.415002+00:00"
+  },
+  {
+   "id": "ETHUSDT-squeeze_expansion-short-202611201200",
+   "symbol": "ETHUSDT",
+   "setup": "squeeze_expansion",
+   "side": "short",
+   "level_name": "BB Lower",
+   "ts": "2026-11-20T12:00:00+00:00",
+   "bar_close": "2026-11-20T12:15:00+00:00",
+   "entry": 1733.69,
+   "sl": 1752.4576493575908,
+   "tp1": 1711.08,
+   "tp2": 1696.1547012848187,
+   "rr1": 1.2,
+   "rr2": 2.0,
+   "tp1_basis": "PWL",
+   "tp2_basis": "2.0R",
+   "sl_pct": 1.083,
+   "atr": 9.18824678795447,
+   "score": 70,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC",
+    "+10 volume ekspansi 2.5x"
+   ],
+   "size": {
+    "qty": 0.532832,
+    "notional_usd": 923.77,
+    "leverage_x": 0.92,
+    "risk_usd": 10.0
+   },
+   "status": "LOSS",
+   "r": -1.1478,
+   "bars": 7,
+   "closed_at": "2026-11-20T14:00:00+00:00",
+   "created_at": "2026-11-20T12:19:56.415002+00:00"
+  },
+  {
+   "id": "XRPUSDT-level_sweep-short-202611232215",
+   "symbol": "XRPUSDT",
+   "setup": "level_sweep",
+   "side": "short",
+   "level_name": "PDH",
+   "ts": "2026-11-23T22:15:00+00:00",
+   "bar_close": "2026-11-23T22:30:00+00:00",
+   "entry": 0.9387,
+   "sl": 0.9453239240655243,
+   "tp1": 0.9320760759344756,
+   "tp2": 0.9118,
+   "rr1": 1.0,
+   "rr2": 4.06,
+   "tp1_basis": "1R",
+   "tp2_basis": "PDL",
+   "sl_pct": 0.706,
+   "atr": 0.00661962032762225,
+   "score": 71,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC",
+    "+8 candle trigger kuat",
+    "+8 RR TP2 4.1",
+    "-10 volume sepi"
+   ],
+   "size": {
+    "qty": 1509.68,
+    "notional_usd": 1417.14,
+    "leverage_x": 1.42,
+    "risk_usd": 10.0
+   },
+   "status": "LOSS",
+   "r": -1.2267,
+   "bars": 9,
+   "closed_at": "2026-11-24T00:45:00+00:00",
+   "created_at": "2026-11-23T22:55:26.875062+00:00"
+  },
+  {
+   "id": "ETHUSDT-level_sweep-short-202611260245",
+   "symbol": "ETHUSDT",
+   "setup": "level_sweep",
+   "side": "short",
+   "level_name": "PDH",
+   "ts": "2026-11-26T02:45:00+00:00",
+   "bar_close": "2026-11-26T03:00:00+00:00",
+   "entry": 1698.62,
+   "sl": 1710.944642803881,
+   "tp1": 1686.2953571961189,
+   "tp2": 1673.9707143922378,
+   "rr1": 1.0,
+   "rr2": 2.0,
+   "tp1_basis": "1R",
+   "tp2_basis": "2.0R",
+   "sl_pct": 0.726,
+   "atr": 8.673214019405005,
+   "score": 65,
+   "reasons": [
+    "+10 searah bias H4",
+    "+5 searah bias BTC"
+   ],
+   "size": {
+    "qty": 0.811383,
+    "notional_usd": 1378.23,
+    "leverage_x": 1.38,
+    "risk_usd": 10.0
+   },
+   "status": "OPEN",
+   "r": null,
+   "bars": 0,
+   "closed_at": null,
+   "created_at": "2026-11-26T03:06:18.025531+00:00"
+  }
+ ],
+ "stats": {
+  "overall": {
+   "n": 7,
+   "win_rate": 57.1,
+   "avg_r": -0.082,
+   "total_r": -0.57,
+   "profit_factor": 0.84
+  },
+  "max_drawdown_r": 2.37,
+  "equity_r": [
+   -1.205,
+   -0.439,
+   -0.179,
+   1.419,
+   1.801,
+   0.653,
+   -0.574
+  ],
+  "by_side": {
+   "short": {
+    "n": 7,
+    "win_rate": 57.1,
+    "avg_r": -0.082,
+    "total_r": -0.57,
+    "profit_factor": 0.84
+   }
+  },
+  "by_setup": {
+   "breakout_retest": {
+    "n": 1,
+    "win_rate": 100.0,
+    "avg_r": 0.261,
+    "total_r": 0.26,
+    "profit_factor": 999.0
+   },
+   "level_sweep": {
+    "n": 2,
+    "win_rate": 0.0,
+    "avg_r": -1.216,
+    "total_r": -2.43,
+    "profit_factor": 0.0
+   },
+   "squeeze_expansion": {
+    "n": 4,
+    "win_rate": 75.0,
+    "avg_r": 0.399,
+    "total_r": 1.6,
+    "profit_factor": 2.39
+   }
+  },
+  "by_symbol": {
+   "DOGEUSDT": {
+    "n": 1,
+    "win_rate": 100.0,
+    "avg_r": 0.766,
+    "total_r": 0.77,
+    "profit_factor": 999.0
+   },
+   "ETHUSDT": {
+    "n": 1,
+    "win_rate": 0.0,
+    "avg_r": -1.148,
+    "total_r": -1.15,
+    "profit_factor": 0.0
+   },
+   "HBARUSDT": {
+    "n": 1,
+    "win_rate": 100.0,
+    "avg_r": 0.261,
+    "total_r": 0.26,
+    "profit_factor": 999.0
+   },
+   "LINKUSDT": {
+    "n": 1,
+    "win_rate": 100.0,
+    "avg_r": 1.598,
+    "total_r": 1.6,
+    "profit_factor": 999.0
+   },
+   "PEPEUSDT": {
+    "n": 1,
+    "win_rate": 100.0,
+    "avg_r": 0.382,
+    "total_r": 0.38,
+    "profit_factor": 999.0
+   },
+   "XRPUSDT": {
+    "n": 2,
+    "win_rate": 0.0,
+    "avg_r": -1.216,
+    "total_r": -2.43,
+    "profit_factor": 0.0
+   }
+  }
+ }
+}

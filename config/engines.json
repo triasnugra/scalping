@@ -1,0 +1,18 @@
+{
+  "owner": "",
+  "allowDemo": true,
+  "engines": [
+    { "id": "sc",   "name": "SC · Sweep + Pullback",      "repo": "sc",   "adapter": "sc",
+      "sources": [{ "key": "journal", "branch": "main", "path": "data/journal.json" }] },
+    { "id": "scv2", "name": "SCv2 · Gate 0-9 / T1-T4",   "repo": "scv2", "adapter": "scv2",
+      "sources": [{ "key": "journal", "branch": "data", "path": "journal.json" }] },
+    { "id": "scv3", "name": "SCv3 · 4 Setup Range",      "repo": "scv3", "adapter": "scv3",
+      "sources": [{ "key": "signals", "branch": "main", "path": "state/signals.json" }] },
+    { "id": "scv4", "name": "SCv4 · Fib & Flip",         "repo": "scv4", "adapter": "scv4",
+      "sources": [{ "key": "history", "url": "https://{owner}.github.io/{repo}/history.json" }] },
+    { "id": "scv5", "name": "SCv5 · Forward-Test Hash",  "repo": "scv5", "adapter": "scv5",
+      "sources": [{ "key": "journal", "branch": "main", "path": "data/journal.jsonl" }] },
+    { "id": "scv6", "name": "SCv6 · Multi-Exchange",     "repo": "scv6", "adapter": "scv6",
+      "sources": [{ "key": "journal", "branch": "main", "path": "data/journal.json" }] }
+  ]
+}
