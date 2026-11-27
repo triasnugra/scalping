@@ -322,16 +322,18 @@ function lapState(l) { const r = lapTanggal(l.id); if (r) return { c: 'hijau', r
 function lapKartu(l, judul, info, i, md) {
   const s = lapState(l), id = esc(l.id);
   return `<div class="card ${s.c}"><b>${judul}</b><br><small class="mut">${info}</small><br><b>${s.c === 'hijau' ? 'Sudah dilaporkan: ' + esc(s.r) : s.c === 'biru' ? 'BELUM dilaporkan; hari terakhir tampil' : 'Belum dilaporkan'}</b><br>
-    <button data-copy="${i}">Salin laporan</button> <input type="date" id="d${id}" value="${esc(s.r || wibHari())}"><button data-save="${id}">Simpan tanggal lapor</button>${s.r ? `<button data-clear="${id}">Hapus</button>` : ''}
+    <button data-copy="${i}">Salin laporan</button> <input type="date" id="d${id}" value="${esc(s.r || wibHari())}"><button data-save="${id}">Simpan</button><button data-clear="${id}">Hapus</button>
     <textarea readonly>${esc(md)}</textarea></div>`;
 }
 function lap() {
-  if (!LAP.live) { $('#lap').innerHTML = ''; return; }
+  if (!LAP.live) { $('#lap').innerHTML = ''; $('#bannerLap').innerHTML = ''; return; }
   LK = (LAP.log || []).filter(l => { const k = selisih(l.d); return k >= 1 && k <= MON.laporanHari; });
-  let h = `<h2>Laporan untuk Claude</h2><div class="card"><small class="mut">Status penyimpanan: ${esc(fbMsg)}</small></div><small class="mut">Satu laporan per tanggal WIB: sampai ${MON.laporanHari} laporan harian (beku, tampil ${MON.laporanHari} hari) + 1 laporan live. Biru = belum dilaporkan sampai hari terakhir tampil; hijau = sudah dilaporkan. Salin ke chat Claude.</small><div class="kol">`;
+  let h = `<h2>Laporan untuk Claude</h2><div class="card"><small class="mut">Status penyimpanan: ${esc(fbMsg)}</small></div><small class="mut">Maksimal 4 kolom: sampai ${MON.laporanHari} laporan harian (per tanggal WIB, tampil ${MON.laporanHari} hari lalu hilang otomatis) + 1 laporan live. Biru = belum dilaporkan sampai hari terakhir tampil; hijau = sudah dilaporkan.</small><div class="kol">`;
   LK.forEach((l, i) => { h += lapKartu(l, `Laporan ${esc(l.d)}`, `Terakhir diperbarui ${esc(l.t.slice(0, 16).replace('T', ' '))} UTC · tampil sisa ${MON.laporanHari + 1 - selisih(l.d)} hari`, i, l.md); });
   h += lapKartu({ id: LAP.hariId, d: LAP.hariIni }, `LIVE (${esc(LAP.hariIni)})`, `Diperbarui ${esc(LAP.updated.slice(0, 16).replace('T', ' '))} UTC; menjadi laporan harian mulai besok`, 'live', LAP.live);
   $('#lap').innerHTML = h + '</div>';
+  const nb = LK.filter(l => lapState(l).c === 'biru').length;
+  $('#bannerLap').innerHTML = nb ? `<div class="banner" style="border-color:var(--acc);color:#cfe3ff;background:rgba(90,162,255,.1)">${nb} laporan belum dikirim ke Claude lebih dari ${MON.laporanHari} hari.</div>` : '';
 }
 async function writeTgl(id, v) {
   LS.set('lap:' + id, v);
@@ -348,9 +350,9 @@ $('#lap').addEventListener('click', ev => {
   else if (b.dataset.clear) writeTgl(b.dataset.clear, '');
 });
 
-// Firebase (opsional): tanggal lapor dibagi lintas perangkat. Memakai proyek & aturan monitortn yang sudah ada; id berakhiran 0100.
+// Firebase (opsional): tanggal lapor dibagi lintas perangkat. Proyek Firebase: scalpingasgra (aturan di firestore.rules); id berakhiran 0100.
 async function initFirebase() {
-  const cfg = { apiKey: 'AIzaSyAKFgWdeXzNkeAqZn40ylzWB6oF3cML5EY', authDomain: 'monitortn.firebaseapp.com', projectId: 'monitortn', storageBucket: 'monitortn.firebasestorage.app', messagingSenderId: '767147872981', appId: '1:767147872981:web:ed61d90e2f9fab7108c85c' };
+  const cfg = { apiKey: 'AIzaSyAgsnLlfaC_SqJEbhKSfE-XBxy7LtLuQFo', authDomain: 'scalpingasgra.firebaseapp.com', projectId: 'scalpingasgra', storageBucket: 'scalpingasgra.firebasestorage.app', messagingSenderId: '263332179692', appId: '1:263332179692:web:797db7079642c471ba3fc9' };
   try {
     const A = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js'), F = await import('https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js');
     const db = F.getFirestore(A.initializeApp(cfg, 'msc'));

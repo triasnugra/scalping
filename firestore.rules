@@ -1,6 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Laporan untuk Claude: koleksi "laporan", ID dokumen = 12 digit angka
     match /laporan/{id} {
       allow read: if true;
       allow create, update: if id.matches('^[0-9]{12}$')
@@ -11,6 +13,8 @@ service cloud.firestore {
         && request.resource.data.diperbarui == request.time;
       allow delete: if false;
     }
+
+    // Koleksi lain ditutup
     match /{document=**} {
       allow read, write: if false;
     }
